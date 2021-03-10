@@ -1,0 +1,62 @@
+version: "1.0"
+stages:
+  - prepare
+  - build
+  - deploy 
+  - finish   
+steps:
+  clone:
+    type: "git-clone"
+    stage: prepare
+    description: "Cloning main repository..."
+    repo: '${{CF_REPO_OWNER}}/${{CF_REPO_NAME}}'
+    revision: "${{CF_BRANCH}}"
+  build_app_image:
+    title: Building Docker Image
+    type: build
+    stage: build
+    image_name: kostiscodefresh/argo-rollouts-blue-green-sample-app
+    working_directory: "${{clone}}" 
+    tags:
+    - "latest"
+    - '${{CF_SHORT_REVISION}}'
+    dockerfile: Dockerfile
+  start_deployment:
+    title: Deploying new color
+    stage: deploy
+    image: codefresh/cf-deploy-kubernetes:master
+    working_directory: "${{clone}}"
+    commands:
+      - /cf-deploy-kubernetes ./blue-green-manual-approval/service.yaml 
+      - /cf-deploy-kubernetes ./blue-green-manual-approval/service-preview.yaml   
+      - /cf-deploy-kubernetes ./blue-green-manual-approval/rollout.yaml   
+    environment:
+      - KUBECONTEXT=mydemoAkscluster@BizSpark Plus
+      - KUBERNETES_NAMESPACE=blue-green 
+  wait_for_new_color:
+    fail_fast: false
+    type: pending-approval
+    title: Is the new color ok?
+    stage: deploy  
+  promote_color:
+    title: Switching traffic to new color
+    stage: finish
+    image: nazarcodefresh/argo-plugin:latest
+    commands:
+      - kubectl argo rollouts promote spring-sample-app-deployment -n blue-green --context 'mydemoAkscluster@BizSpark Plus'
+    when:
+      steps:
+      - name: wait_for_new_color
+        on:
+        - approved 
+  abort_deployment:
+    title: Keeping the existing color
+    stage: finish
+    image: nazarcodefresh/argo-plugin:latest
+    commands:
+      - kubectl argo rollouts abort spring-sample-app-deployment -n blue-green --context 'mydemoAkscluster@BizSpark Plus'
+    when:
+      steps:
+      - name: wait_for_new_color
+        on:
+        - denied         
