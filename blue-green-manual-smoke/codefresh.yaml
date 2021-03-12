@@ -33,30 +33,37 @@ steps:
     environment:
       - KUBECONTEXT=mydemoAkscluster@BizSpark Plus
       - KUBERNETES_NAMESPACE=blue-green 
-  wait_for_new_color:
+  run_integration_tests:
+    title: Smoke tests
+    stage: deploy
+    image: maven:3.5.2-jdk-8-alpine
+    working_directory: "${{clone}}" 
     fail_fast: false
-    type: pending-approval
-    title: Is the new color ok?
-    stage: deploy  
+    commands:
+     - mvn -Dmaven.repo.local=/codefresh/volume/m2_repository verify -Dserver.host=http://13.86.102.74  -Dserver.port=80
   promote_color:
     title: Switching traffic to new color
     stage: finish
     image: nazarcodefresh/argo-plugin:latest
     commands:
-      - kubectl argo rollouts promote spring-sample-app-deployment -n blue-green --context 'mydemoAkscluster@BizSpark Plus'
+      - kubectl argo rollouts version
+      - kubectl config use-context "mydemoAkscluster@BizSpark Plus"
+      - kubectl argo rollouts promote spring-sample-app-deployment -n blue-green 
     when:
       steps:
-      - name: wait_for_new_color
+      - name: run_integration_tests
         on:
-        - approved 
+        - success 
   abort_deployment:
     title: Keeping the existing color
     stage: finish
     image: nazarcodefresh/argo-plugin:latest
     commands:
-      - kubectl argo rollouts undo spring-sample-app-deployment -n blue-green --context 'mydemoAkscluster@BizSpark Plus'
+      - kubectl argo rollouts version
+      - kubectl config use-context "mydemoAkscluster@BizSpark Plus"
+      - kubectl argo rollouts undo spring-sample-app-deployment -n blue-green 
     when:
       steps:
-      - name: wait_for_new_color
+      - name: run_integration_tests
         on:
-        - denied         
+        - failure         
