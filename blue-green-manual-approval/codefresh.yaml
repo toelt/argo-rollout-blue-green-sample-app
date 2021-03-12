@@ -54,7 +54,7 @@ steps:
     stage: finish
     image: nazarcodefresh/argo-plugin:latest
     commands:
-      - kubectl argo rollouts abort spring-sample-app-deployment -n blue-green --context 'mydemoAkscluster@BizSpark Plus'
+      - kubectl argo rollouts undo spring-sample-app-deployment -n blue-green --context 'mydemoAkscluster@BizSpark Plus'
     when:
       steps:
       - name: wait_for_new_color
