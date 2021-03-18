@@ -41,9 +41,9 @@ steps:
   promote_color:
     title: Switching traffic to new color
     stage: finish
-    image: nazarcodefresh/argo-plugin:latest
+    image: kostiscodefresh/kubectl-argo-rollouts:latest
     commands:
-      - kubectl argo rollouts promote spring-sample-app-deployment -n blue-green --context 'mydemoAkscluster@BizSpark Plus'
+      - /app/kubectl-argo-rollouts-linux-amd64 promote spring-sample-app-deployment -n blue-green --context "mydemoAkscluster@BizSpark Plus"
     when:
       steps:
       - name: wait_for_new_color
@@ -52,9 +52,9 @@ steps:
   abort_deployment:
     title: Keeping the existing color
     stage: finish
-    image: nazarcodefresh/argo-plugin:latest
+    image: kostiscodefresh/kubectl-argo-rollouts:latest
     commands:
-      - kubectl argo rollouts undo spring-sample-app-deployment -n blue-green --context 'mydemoAkscluster@BizSpark Plus'
+      - /app/kubectl-argo-rollouts-linux-amd64 argo rollouts undo spring-sample-app-deployment -n blue-green --context "mydemoAkscluster@BizSpark Plus" 
     when:
       steps:
       - name: wait_for_new_color
