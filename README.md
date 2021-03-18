@@ -40,10 +40,10 @@ mvn verify
 ## To use this project in Codefresh 
 
 
-There is also a [codefresh.yml](codefresh.yml) for easy usage with the [Codefresh](codefresh.io) CI/CD platform.
+There is also a [blue-green-manual-approval/codefresh.yml](codefresh.yml) for easy usage with the [Codefresh](codefresh.io) CI/CD platform.
 
 
-More details can be found in [Codefresh documentation](https://codefresh.io/docs/docs/learn-by-example/java/spring-boot-2/)
+More details can be found in [Codefresh documentation](https://codefresh.io/docs/ci-cd-guides/progressive-delivery/)
 
 
 Enjoy!
