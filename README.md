@@ -90,7 +90,7 @@ kubectl get svc  rollout-bluegreen-preview -n blue-green -o jsonpath='{.spec.por
 There is also a [codefresh.yaml](blue-green-manual-approval/codefresh.yaml) for easy usage with the [Codefresh](codefresh.io) CI/CD platform.
 
 
-More details can be found in [Codefresh documentation](https://codefresh.io/docs/ci-cd-guides/progressive-delivery/)
+More details can be found in [Codefresh documentation](https://codefresh.io/docs/docs/ci-cd-guides/progressive-delivery/)
 
 
 Enjoy!
