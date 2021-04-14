@@ -57,7 +57,7 @@ steps:
     stage: finish
     image: kostiscodefresh/kubectl-argo-rollouts:latest
     commands:
-      - /app/kubectl-argo-rollouts-linux-amd64 argo rollouts undo spring-sample-app-deployment -n blue-green --context "mydemoAkscluster@BizSpark Plus" 
+      - /app/kubectl-argo-rollouts-linux-amd64 undo spring-sample-app-deployment -n blue-green --context "mydemoAkscluster@BizSpark Plus" 
     when:
       steps:
       - name: run_integration_tests
